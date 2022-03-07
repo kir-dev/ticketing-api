@@ -1,15 +1,23 @@
 import { Injectable } from '@nestjs/common'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model } from 'mongoose'
 import { CreateTicketDto } from './dto/create-ticket.dto'
 import { UpdateTicketDto } from './dto/update-ticket.dto'
+import { Ticket, TicketDocument } from './entities/ticket.entity'
 
 @Injectable()
 export class TicketsService {
-  create(createTicketDto: CreateTicketDto) {
-    return 'This action adds a new ticket'
+  constructor(
+    @InjectModel(Ticket.name) private ticketModel: Model<TicketDocument>,
+  ) {}
+
+  async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
+    const createdTicket = new this.ticketModel(createTicketDto)
+    return createdTicket.save()
   }
 
-  findAll() {
-    return `This action returns all tickets`
+  async findAll(): Promise<Ticket[]> {
+    return this.ticketModel.find().exec()
   }
 
   findOne(id: number) {
