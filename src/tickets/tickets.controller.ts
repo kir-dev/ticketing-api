@@ -39,4 +39,9 @@ export class TicketsController {
   remove(@Param('id') id: string) {
     return this.ticketsService.remove(+id)
   }
+
+  @Delete(':id/labels/:labelId')
+  removeLabel(@Param('id') id: string, @Param('labelId') labelId: string) {
+    return this.ticketsService.removeLabel(+id, +labelId)
+  }
 }
