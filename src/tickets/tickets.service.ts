@@ -12,7 +12,7 @@ export class TicketsService {
   ) {}
 
   async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
-    const createdTicket = new this.ticketModel(createTicketDto)
+    const createdTicket: TicketDocument = new this.ticketModel(createTicketDto)
     return createdTicket.save()
   }
 
@@ -35,6 +35,6 @@ export class TicketsService {
   async removeLabel(id: number, labelId: number): Promise<Ticket> {
     const ticket: TicketDocument = await this.ticketModel.findById(id)
     // TODO: implement label removal
-    return ticket
+    return ticket.save()
   }
 }

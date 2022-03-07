@@ -13,7 +13,7 @@ export class Ticket {
   title: string
 
   @Prop()
-  description: string
+  description: string = null
 
   @Prop()
   phase: string = Phase.CREATED
