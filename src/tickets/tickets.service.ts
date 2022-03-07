@@ -20,19 +20,19 @@ export class TicketsService {
     return this.ticketModel.find().exec()
   }
 
-  findOne(id: number): Promise<Ticket> {
+  findOne(id: string): Promise<Ticket> {
     return this.ticketModel.findById(id).exec()
   }
 
-  update(id: number, updateTicketDto: UpdateTicketDto): Promise<Ticket> {
+  update(id: string, updateTicketDto: UpdateTicketDto): Promise<Ticket> {
     return this.ticketModel.findByIdAndUpdate(id, updateTicketDto).exec()
   }
 
-  remove(id: number): Promise<Ticket> {
+  remove(id: string): Promise<Ticket> {
     return this.ticketModel.findByIdAndDelete(id).exec()
   }
 
-  async removeLabel(id: number, labelId: number): Promise<Ticket> {
+  async removeLabel(id: string, labelId: string): Promise<Ticket> {
     const ticket: TicketDocument = await this.ticketModel.findById(id)
     // TODO: implement label removal
     return ticket.save()
