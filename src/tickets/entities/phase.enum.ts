@@ -1,0 +1,6 @@
+export enum Phase {
+  CREATED = 'CREATED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  UNDER_REVIEW = 'UNDER_REVIEW',
+  CLOSED = 'CLOSED',
+}

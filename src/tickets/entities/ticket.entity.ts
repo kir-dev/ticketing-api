@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
+import { Phase } from './phase.enum'
 
 export type TicketDocument = Ticket & Document
 
@@ -15,7 +16,7 @@ export class Ticket {
   description: string
 
   @Prop()
-  phase = 'CREATED'
+  phase: string = Phase.CREATED
 
   // labelIds: ObjectId[]
   // boardId: ObjectId
