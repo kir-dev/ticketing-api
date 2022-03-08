@@ -68,4 +68,19 @@ export class TicketsService {
 
     return ticket.save()
   }
+
+  async removeLabelOfAll(labelId: string): Promise<Ticket[]> {
+    const ticketEntities = await this.ticketModel
+      .find()
+      .where({ labelId: labelId })
+      .exec()
+    this.logger.debug(
+      `Removing label ${labelId} from ${ticketEntities.length} tickets`,
+    )
+    ticketEntities.forEach((ticketEntity) => {
+      this.removeLabel(ticketEntity.id, labelId)
+    })
+
+    return ticketEntities
+  }
 }

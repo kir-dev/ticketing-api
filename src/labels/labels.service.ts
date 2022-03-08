@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
+import { EventEmitter2 } from '@nestjs/event-emitter'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { CreateLabelDto } from './dto/create-label.dto'
@@ -9,7 +10,10 @@ import { Label, LabelDocument } from './entities/label.entity'
 export class LabelsService {
   constructor(
     @InjectModel(Label.name) private labelModel: Model<LabelDocument>,
+    private eventEmitter: EventEmitter2,
   ) {}
+
+  private readonly logger = new Logger(LabelsService.name)
 
   async create(createLabelDto: CreateLabelDto): Promise<Label> {
     const createdLabel: LabelDocument = new this.labelModel(createLabelDto)
@@ -33,8 +37,11 @@ export class LabelsService {
   }
 
   async remove(id: string): Promise<Label> {
-    return this.labelModel.findByIdAndDelete(id).exec()
+    const labelEntity = await this.labelModel.findByIdAndDelete(id).exec()
 
-    // TODO: delete my id from other tickets containing me
+    this.logger.debug('Emitting in LabelsService')
+    this.eventEmitter.emit('label.afterDeleted', labelEntity)
+
+    return labelEntity
   }
 }
