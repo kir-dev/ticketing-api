@@ -20,6 +20,10 @@ export class LabelsService {
     return this.labelModel.find().exec()
   }
 
+  async findMany(ids: string[]): Promise<Label[]> {
+    return this.labelModel.find().where('_id').in(ids).exec()
+  }
+
   async findOne(id: string): Promise<Label> {
     return this.labelModel.findById(id).exec()
   }
@@ -30,5 +34,7 @@ export class LabelsService {
 
   async remove(id: string): Promise<Label> {
     return this.labelModel.findByIdAndDelete(id).exec()
+
+    // TODO: delete my id from other tickets containing me
   }
 }

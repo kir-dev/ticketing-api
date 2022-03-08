@@ -30,5 +30,7 @@ export class BoardsService {
 
   async remove(id: string): Promise<Board> {
     return this.boardModel.findByIdAndDelete(id).exec()
+
+    // TODO: delete my tickets too
   }
 }

@@ -1,4 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator'
+import { IsObjectId, IsObjectIdArray } from 'src/validators/object-id.validator'
 import { Phase } from '../entities/phase.enum'
 
 export class CreateTicketDto {
@@ -13,8 +14,10 @@ export class CreateTicketDto {
   phase: string
 
   @IsNotEmpty()
-  boardId: string
+  @IsObjectId()
+  board: string
 
   @IsOptional()
-  labelIds: string[]
+  @IsObjectIdArray()
+  labels: string[]
 }
