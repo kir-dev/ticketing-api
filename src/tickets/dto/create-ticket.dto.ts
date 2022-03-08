@@ -4,13 +4,13 @@ import { Ticket } from '../entities/ticket.entity'
 
 export class CreateTicketDto implements Ticket {
   @IsOptional()
-  createdAt: Date = new Date()
+  createdAt: Date
 
   @IsNotEmpty()
   title: string
 
   @IsOptional()
-  description: string = null
+  description: string
 
   @IsOptional()
   @IsEnum(Phase)
