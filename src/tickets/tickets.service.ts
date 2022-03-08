@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { BoardsService } from 'src/boards/boards.service'
@@ -14,6 +14,8 @@ export class TicketsService {
     private readonly boardsService: BoardsService,
     private readonly labelsService: LabelsService,
   ) {}
+
+  private readonly logger = new Logger(TicketsService.name)
 
   async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
     const { board, labels } = createTicketDto
@@ -50,6 +52,7 @@ export class TicketsService {
   }
 
   async removeWhereBoard(id: string) {
+    this.logger.debug(`Removing all tickets where Board ${id}`)
     return this.ticketModel.deleteMany({ board: id }).exec()
   }
 

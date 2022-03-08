@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
+import { EventEmitterModule } from '@nestjs/event-emitter'
 import { MongooseModule } from '@nestjs/mongoose'
 import { BoardsModule } from './boards/boards.module'
 import { LabelsModule } from './labels/labels.module'
@@ -22,6 +23,7 @@ import { TicketsModule } from './tickets/tickets.module'
     TicketsModule,
     BoardsModule,
     LabelsModule,
+    EventEmitterModule.forRoot(),
   ],
 })
 export class AppModule {}
