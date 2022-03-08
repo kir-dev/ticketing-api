@@ -8,9 +8,7 @@ import { LabelsService } from './labels.service'
   imports: [
     MongooseModule.forFeature([{ name: Label.name, schema: LabelSchema }]),
   ],
-  exports: [
-    MongooseModule.forFeature([{ name: Label.name, schema: LabelSchema }]),
-  ],
+  exports: [LabelsService],
   controllers: [LabelsController],
   providers: [LabelsService],
 })

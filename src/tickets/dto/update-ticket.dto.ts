@@ -14,4 +14,7 @@ export class UpdateTicketDto {
 
   @IsOptional()
   boardId: string
+
+  @IsOptional()
+  labelIds: string[]
 }

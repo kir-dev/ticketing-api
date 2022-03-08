@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { Board, BoardDocument } from 'src/boards/entities/board.entity'
+import { BoardsService } from 'src/boards/boards.service'
+import { LabelsService } from 'src/labels/labels.service'
 import { CreateTicketDto } from './dto/create-ticket.dto'
 import { UpdateTicketDto } from './dto/update-ticket.dto'
 import { Ticket, TicketDocument } from './entities/ticket.entity'
@@ -10,15 +11,13 @@ import { Ticket, TicketDocument } from './entities/ticket.entity'
 export class TicketsService {
   constructor(
     @InjectModel(Ticket.name) private ticketModel: Model<TicketDocument>,
-    @InjectModel(Board.name) private boardModel: Model<BoardDocument>,
+    @Inject() private boardsService: BoardsService,
+    @Inject() private labelsService: LabelsService,
   ) {}
 
   async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
-    // validate board's existence
-    const board: BoardDocument = await this.boardModel.findById(
-      createTicketDto.boardId,
-    )
-    if (board == null) return null
+    const board = await this.boardsService.findOne(createTicketDto.boardId)
+    if (board == null) return null // wtf?
 
     const createdTicket: TicketDocument = new this.ticketModel({
       ...createTicketDto,
@@ -44,8 +43,14 @@ export class TicketsService {
   }
 
   async removeLabel(id: string, labelId: string): Promise<Ticket> {
+    const label = await this.labelsService.findOne(labelId)
+    if (label == null) return null // wtf?
+
     const ticket: TicketDocument = await this.ticketModel.findById(id)
-    // TODO: implement label removal
+    const labelIndex = ticket.labels.indexOf(label)
+    if (labelIndex == -1) return null // wtf?
+    ticket.labels.splice(labelIndex, 1)
+
     return ticket.save()
   }
 }

@@ -14,4 +14,7 @@ export class CreateTicketDto {
 
   @IsNotEmpty()
   boardId: string
+
+  @IsOptional()
+  labelIds: string[]
 }
