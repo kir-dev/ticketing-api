@@ -49,6 +49,10 @@ export class TicketsService {
     return this.ticketModel.findByIdAndDelete(id).exec()
   }
 
+  async removeWhereBoard(id: string) {
+    return this.ticketModel.deleteMany({ board: id }).exec()
+  }
+
   async removeLabel(id: string, labelId: string): Promise<Ticket> {
     const label = await this.labelsService.findOne(labelId)
     if (label == null)

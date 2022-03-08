@@ -29,8 +29,10 @@ export class BoardsService {
   }
 
   async remove(id: string): Promise<Board> {
-    return this.boardModel.findByIdAndDelete(id).exec()
+    const boardEntity: BoardDocument = await this.boardModel
+      .findByIdAndDelete(id)
+      .exec()
 
-    // TODO: delete my tickets too
+    return boardEntity
   }
 }
