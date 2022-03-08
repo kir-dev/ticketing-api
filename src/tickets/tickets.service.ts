@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { BoardsService } from 'src/boards/boards.service'
@@ -11,8 +11,8 @@ import { Ticket, TicketDocument } from './entities/ticket.entity'
 export class TicketsService {
   constructor(
     @InjectModel(Ticket.name) private ticketModel: Model<TicketDocument>,
-    @Inject() private boardsService: BoardsService,
-    @Inject() private labelsService: LabelsService,
+    private readonly boardsService: BoardsService,
+    private readonly labelsService: LabelsService,
   ) {}
 
   async create(createTicketDto: CreateTicketDto): Promise<Ticket> {

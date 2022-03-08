@@ -9,11 +9,15 @@ import { TicketsModule } from './tickets/tickets.module'
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRoot(
-      `mongodb+srv://
-        ${process.env.DATABASE_USERNAME}:
-        ${process.env.DATABASE_PASSWORD}@
-        ${process.env.DATABASE_HOST}/
-        ${process.env.DATABASE_NAME}?retryWrites=true&w=majority`,
+      'mongodb+srv://' +
+        process.env.DATABASE_USERNAME +
+        ':' +
+        process.env.DATABASE_PASSWORD +
+        '@' +
+        process.env.DATABASE_HOST +
+        '/' +
+        process.env.DATABASE_NAME +
+        '?retryWrites=true&w=majority',
     ),
     TicketsModule,
     BoardsModule,
