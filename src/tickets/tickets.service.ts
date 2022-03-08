@@ -54,7 +54,7 @@ export class TicketsService {
     if (label == null)
       throw new NotFoundException(null, `Label with id ${labelId} not found`)
 
-    const ticket: TicketDocument = await this.ticketModel.findById(id)
+    const ticket: TicketDocument = await this.ticketModel.findById(id).exec()
     const labelIndex = ticket.labels.indexOf(label)
     if (labelIndex == -1) return null // wtf?
     ticket.labels.splice(labelIndex, 1)
