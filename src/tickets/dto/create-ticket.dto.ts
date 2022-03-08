@@ -10,5 +10,8 @@ export class CreateTicketDto {
 
   @IsOptional()
   @IsEnum(Phase)
-  phase: string = Phase.CREATED
+  phase: string
+
+  @IsNotEmpty()
+  boardId: string
 }

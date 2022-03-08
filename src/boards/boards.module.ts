@@ -8,6 +8,9 @@ import { Board, BoardSchema } from './entities/board.entity'
   imports: [
     MongooseModule.forFeature([{ name: Board.name, schema: BoardSchema }]),
   ],
+  exports: [
+    MongooseModule.forFeature([{ name: Board.name, schema: BoardSchema }]),
+  ],
   controllers: [BoardsController],
   providers: [BoardsService],
 })

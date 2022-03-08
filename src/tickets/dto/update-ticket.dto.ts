@@ -11,4 +11,7 @@ export class UpdateTicketDto {
   @IsOptional()
   @IsEnum(Phase)
   phase: string
+
+  @IsOptional()
+  boardId: string
 }

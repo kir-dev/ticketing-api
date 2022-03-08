@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document } from 'mongoose'
+import mongoose, { Document } from 'mongoose'
+import { Board } from 'src/boards/entities/board.entity'
 import { Phase } from './phase.enum'
 
 export type TicketDocument = Ticket & Document
@@ -19,7 +20,9 @@ export class Ticket {
   phase: string
 
   // labelIds: ObjectId[]
-  // boardId: ObjectId
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Board' })
+  board: Board
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket)
