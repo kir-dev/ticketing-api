@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { BoardsService } from 'src/boards/boards.service'
@@ -16,12 +16,19 @@ export class TicketsService {
   ) {}
 
   async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
-    const board = await this.boardsService.findOne(createTicketDto.boardId)
-    if (board == null) return null // wtf?
+    const { board, labels } = createTicketDto
+
+    const [boardEntity, labelEntities] = await Promise.all([
+      this.boardsService.findOne(board),
+      this.labelsService.findMany(labels),
+    ])
+
+    if (boardEntity == null)
+      throw new NotFoundException(null, `Board with id ${board} not found`)
 
     const createdTicket: TicketDocument = new this.ticketModel({
       ...createTicketDto,
-      board: createTicketDto.boardId,
+      labels: labelEntities,
     })
     return createdTicket.save()
   }
@@ -44,7 +51,8 @@ export class TicketsService {
 
   async removeLabel(id: string, labelId: string): Promise<Ticket> {
     const label = await this.labelsService.findOne(labelId)
-    if (label == null) return null // wtf?
+    if (label == null)
+      throw new NotFoundException(null, `Label with id ${labelId} not found`)
 
     const ticket: TicketDocument = await this.ticketModel.findById(id)
     const labelIndex = ticket.labels.indexOf(label)
