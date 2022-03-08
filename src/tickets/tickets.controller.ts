@@ -16,32 +16,38 @@ export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
   @Post()
-  create(@Body() createTicketDto: CreateTicketDto) {
+  async create(@Body() createTicketDto: CreateTicketDto) {
     return this.ticketsService.create(createTicketDto)
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.ticketsService.findAll()
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.ticketsService.findOne(id)
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTicketDto: UpdateTicketDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateTicketDto: UpdateTicketDto,
+  ) {
     return this.ticketsService.update(id, updateTicketDto)
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.ticketsService.remove(id)
   }
 
   @Delete(':id/labels/:labelId')
-  removeLabel(@Param('id') id: string, @Param('labelId') labelId: string) {
+  async removeLabel(
+    @Param('id') id: string,
+    @Param('labelId') labelId: string,
+  ) {
     return this.ticketsService.removeLabel(id, labelId)
   }
 }
