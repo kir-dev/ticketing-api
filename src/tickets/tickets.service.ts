@@ -63,7 +63,7 @@ export class TicketsService {
 
     const ticket: TicketDocument = await this.ticketModel.findById(id).exec()
     const labelIndex = ticket.labels.indexOf(label)
-    if (labelIndex == -1){
+    if (labelIndex == -1) {
       ticket.labels.push(label)
     }
     return ticket.save()
@@ -76,9 +76,13 @@ export class TicketsService {
 
     const ticket: TicketDocument = await this.ticketModel.findById(id).exec()
     const labelIndex = ticket.labels.indexOf(label)
-    if (labelIndex == -1) return null // wtf?
-    ticket.labels.splice(labelIndex, 1)
+    if (labelIndex == -1)
+      throw new NotFoundException(
+        null,
+        `Label ${labelId} was never added to ticket ${id}`,
+      )
 
+    ticket.labels.splice(labelIndex, 1)
     return ticket.save()
   }
 
