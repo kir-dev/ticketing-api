@@ -49,6 +49,19 @@ export class TicketsService {
     return this.ticketModel.findByIdAndDelete(id).exec()
   }
 
+  async addLabel(id: string, labelId: string): Promise<Ticket> {
+    const label = await this.labelsService.findOne(labelId)
+    if (label == null)
+      throw new NotFoundException(null, `Label with id ${labelId} not found`)
+
+    const ticket: TicketDocument = await this.ticketModel.findById(id).exec()
+    const labelIndex = ticket.labels.indexOf(label)
+    if (labelIndex == -1){
+      ticket.labels.push(label)
+    }
+    return ticket.save()
+  }
+
   async removeLabel(id: string, labelId: string): Promise<Ticket> {
     const label = await this.labelsService.findOne(labelId)
     if (label == null)
