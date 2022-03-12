@@ -43,6 +43,14 @@ export class TicketsController {
     return this.ticketsService.remove(id)
   }
 
+  @Patch(':id/labels/:labelId')
+  async addLabel(
+    @Param('id') id: string,
+    @Param('labelId') labelId: string,
+  ) {
+    return this.ticketsService.addLabel(id, labelId)
+  }
+
   @Delete(':id/labels/:labelId')
   async removeLabel(
     @Param('id') id: string,
