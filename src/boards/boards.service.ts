@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
+import { EventEmitter2 } from '@nestjs/event-emitter'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { CreateBoardDto } from './dto/create-board.dto'
@@ -9,7 +10,10 @@ import { Board, BoardDocument } from './entities/board.entity'
 export class BoardsService {
   constructor(
     @InjectModel(Board.name) private boardModel: Model<BoardDocument>,
+    private eventEmitter: EventEmitter2,
   ) {}
+
+  private readonly logger = new Logger(BoardsService.name)
 
   async create(createBoardDto: CreateBoardDto): Promise<Board> {
     const createdBoard: BoardDocument = new this.boardModel(createBoardDto)
@@ -29,8 +33,13 @@ export class BoardsService {
   }
 
   async remove(id: string): Promise<Board> {
-    return this.boardModel.findByIdAndDelete(id).exec()
+    const boardEntity: BoardDocument = await this.boardModel
+      .findByIdAndDelete(id)
+      .exec()
 
-    // TODO: delete my tickets too
+    this.logger.debug('Emitting in BoardsService')
+    this.eventEmitter.emit('board.afterDeleted', boardEntity)
+
+    return boardEntity
   }
 }

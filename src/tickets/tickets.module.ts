@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { BoardsModule } from 'src/boards/boards.module'
 import { LabelsModule } from 'src/labels/labels.module'
 import { Ticket, TicketSchema } from './entities/ticket.entity'
+import { AssociationChangedProvider } from './providers/association-changed.provider'
 import { TicketsController } from './tickets.controller'
 import { TicketsService } from './tickets.service'
 
@@ -13,6 +14,6 @@ import { TicketsService } from './tickets.service'
     LabelsModule,
   ],
   controllers: [TicketsController],
-  providers: [TicketsService],
+  providers: [TicketsService, AssociationChangedProvider],
 })
 export class TicketsModule {}

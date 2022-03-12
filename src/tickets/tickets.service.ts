@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { BoardsService } from 'src/boards/boards.service'
@@ -14,6 +14,8 @@ export class TicketsService {
     private readonly boardsService: BoardsService,
     private readonly labelsService: LabelsService,
   ) {}
+
+  private readonly logger = new Logger(TicketsService.name)
 
   async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
     const { board, labels } = createTicketDto
@@ -49,6 +51,11 @@ export class TicketsService {
     return this.ticketModel.findByIdAndDelete(id).exec()
   }
 
+  async removeWhereBoard(id: string) {
+    this.logger.debug(`Removing all tickets where Board ${id}`)
+    return this.ticketModel.deleteMany({ board: id }).exec()
+  }
+
   async addLabel(id: string, labelId: string): Promise<Ticket> {
     const label = await this.labelsService.findOne(labelId)
     if (label == null)
@@ -73,5 +80,20 @@ export class TicketsService {
     ticket.labels.splice(labelIndex, 1)
 
     return ticket.save()
+  }
+
+  async removeLabelOfAll(labelId: string): Promise<Ticket[]> {
+    const ticketEntities = await this.ticketModel
+      .find()
+      .where({ labelId: labelId })
+      .exec()
+    this.logger.debug(
+      `Removing label ${labelId} from ${ticketEntities.length} tickets`,
+    )
+    ticketEntities.forEach((ticketEntity) => {
+      this.removeLabel(ticketEntity.id, labelId)
+    })
+
+    return ticketEntities
   }
 }
