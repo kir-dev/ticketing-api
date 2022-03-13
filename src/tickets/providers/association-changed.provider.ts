@@ -19,6 +19,6 @@ export class AssociationChangedProvider {
   @OnEvent('label.afterDeleted')
   handleLabelDeletedEvent(payload: LabelDocument) {
     this.logger.debug(`Initiating the label removal ${payload.id} from tickets`)
-    this.ticketsService.removeLabelOfAll(payload.id)
+    this.ticketsService.removeLabelOfAll(payload)
   }
 }

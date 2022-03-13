@@ -1,7 +1,13 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { BoardsService } from 'src/boards/boards.service'
+import { LabelDocument } from 'src/labels/entities/label.entity'
 import { LabelsService } from 'src/labels/labels.service'
 import { CreateTicketDto } from './dto/create-ticket.dto'
 import { UpdateTicketDto } from './dto/update-ticket.dto'
@@ -17,7 +23,7 @@ export class TicketsService {
 
   private readonly logger = new Logger(TicketsService.name)
 
-  async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
+  async create(createTicketDto: CreateTicketDto): Promise<TicketDocument> {
     const { board, labels } = createTicketDto
 
     const [boardEntity, labelEntities] = await Promise.all([
@@ -30,24 +36,28 @@ export class TicketsService {
 
     const createdTicket: TicketDocument = new this.ticketModel({
       ...createTicketDto,
+      board: boardEntity,
       labels: labelEntities,
     })
     return createdTicket.save()
   }
 
-  async findAll(): Promise<Ticket[]> {
+  async findAll(): Promise<TicketDocument[]> {
     return this.ticketModel.find().exec()
   }
 
-  async findOne(id: string): Promise<Ticket> {
+  async findOne(id: string): Promise<TicketDocument> {
     return this.ticketModel.findById(id).exec()
   }
 
-  async update(id: string, updateTicketDto: UpdateTicketDto): Promise<Ticket> {
+  async update(
+    id: string,
+    updateTicketDto: UpdateTicketDto,
+  ): Promise<TicketDocument> {
     return this.ticketModel.findByIdAndUpdate(id, updateTicketDto).exec()
   }
 
-  async remove(id: string): Promise<Ticket> {
+  async remove(id: string): Promise<TicketDocument> {
     return this.ticketModel.findByIdAndDelete(id).exec()
   }
 
@@ -56,46 +66,66 @@ export class TicketsService {
     return this.ticketModel.deleteMany({ board: id }).exec()
   }
 
-  async addLabel(id: string, labelId: string): Promise<Ticket> {
-    const label = await this.labelsService.findOne(labelId)
-    if (label == null)
-      throw new NotFoundException(null, `Label with id ${labelId} not found`)
+  async addLabel(id: string, labelId: string): Promise<TicketDocument> {
+    const labelEntity = await this.labelsService.findOne(labelId)
+    if (labelEntity == null)
+      throw new BadRequestException(null, `Label with id ${labelId} not found`)
 
-    const ticket: TicketDocument = await this.ticketModel.findById(id).exec()
-    const labelIndex = ticket.labels.indexOf(label)
+    const ticketEntity: TicketDocument = await this.ticketModel
+      .findById(id)
+      .exec()
+    if (ticketEntity == null)
+      throw new NotFoundException(null, `Ticket with id ${id} not found`)
+
+    const labelIndex = ticketEntity.labels.indexOf(labelEntity.id)
     if (labelIndex == -1) {
-      ticket.labels.push(label)
+      ticketEntity.labels.push(labelEntity.id)
     }
-    return ticket.save()
+
+    return ticketEntity.save()
   }
 
-  async removeLabel(id: string, labelId: string): Promise<Ticket> {
-    const label = await this.labelsService.findOne(labelId)
-    if (label == null)
-      throw new NotFoundException(null, `Label with id ${labelId} not found`)
-
-    const ticket: TicketDocument = await this.ticketModel.findById(id).exec()
-    const labelIndex = ticket.labels.indexOf(label)
+  private spliceTicketLabels(
+    ticketEntity: TicketDocument,
+    labelEntity: LabelDocument,
+  ): void {
+    const labelIndex = ticketEntity.labels.indexOf(labelEntity.id)
     if (labelIndex == -1)
       throw new NotFoundException(
         null,
-        `Label ${labelId} was never added to ticket ${id}`,
+        `Label ${labelEntity.id} was never added to ticket ${ticketEntity.id}`,
       )
-
-    ticket.labels.splice(labelIndex, 1)
-    return ticket.save()
+    ticketEntity.labels.splice(labelIndex, 1)
   }
 
-  async removeLabelOfAll(labelId: string): Promise<Ticket[]> {
+  async removeLabel(id: string, labelId: string): Promise<TicketDocument> {
+    const labelEntity: LabelDocument = await this.labelsService.findOne(labelId)
+    if (labelEntity == null)
+      throw new NotFoundException(null, `Label with id ${labelId} not found`)
+
+    const ticketEntity: TicketDocument = await this.ticketModel
+      .findById(id)
+      .exec()
+
+    this.spliceTicketLabels(ticketEntity, labelEntity)
+    return ticketEntity.save()
+  }
+
+  async removeLabelOfAll(
+    labelEntity: LabelDocument,
+  ): Promise<TicketDocument[]> {
     const ticketEntities = await this.ticketModel
       .find()
-      .where({ labelId: labelId })
+      .where({ labels: labelEntity.id })
       .exec()
+
     this.logger.debug(
-      `Removing label ${labelId} from ${ticketEntities.length} tickets`,
+      `Removing label ${labelEntity.id} from ${ticketEntities.length} tickets`,
     )
+
     ticketEntities.forEach((ticketEntity) => {
-      this.removeLabel(ticketEntity.id, labelId)
+      this.spliceTicketLabels(ticketEntity, labelEntity)
+      ticketEntity.save()
     })
 
     return ticketEntities
