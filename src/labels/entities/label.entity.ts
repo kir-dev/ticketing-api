@@ -11,7 +11,7 @@ export class Label {
   @Prop({ required: true })
   name: string
 
-  @Prop({ default: '#F7F6F3' })
+  @Prop({ default: 'blue' })
   color: string
 }
 
