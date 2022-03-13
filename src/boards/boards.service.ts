@@ -15,24 +15,27 @@ export class BoardsService {
 
   private readonly logger = new Logger(BoardsService.name)
 
-  async create(createBoardDto: CreateBoardDto): Promise<Board> {
+  async create(createBoardDto: CreateBoardDto): Promise<BoardDocument> {
     const createdBoard: BoardDocument = new this.boardModel(createBoardDto)
     return createdBoard.save()
   }
 
-  async findAll(): Promise<Board[]> {
+  async findAll(): Promise<BoardDocument[]> {
     return this.boardModel.find().exec()
   }
 
-  async findOne(id: string): Promise<Board> {
+  async findOne(id: string): Promise<BoardDocument> {
     return this.boardModel.findById(id).exec()
   }
 
-  async update(id: string, updateBoardDto: UpdateBoardDto): Promise<Board> {
+  async update(
+    id: string,
+    updateBoardDto: UpdateBoardDto,
+  ): Promise<BoardDocument> {
     return this.boardModel.findByIdAndUpdate(id, updateBoardDto).exec()
   }
 
-  async remove(id: string): Promise<Board> {
+  async remove(id: string): Promise<BoardDocument> {
     const boardEntity: BoardDocument = await this.boardModel
       .findByIdAndDelete(id)
       .exec()
