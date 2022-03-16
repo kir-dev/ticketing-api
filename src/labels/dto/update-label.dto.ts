@@ -1,10 +1,10 @@
-import { IsHexColor, IsOptional } from 'class-validator'
+import { IsOptional, IsString } from 'class-validator'
 
 export class UpdateLabelDto {
   @IsOptional()
   name: string
 
   @IsOptional()
-  @IsHexColor()
+  @IsString()
   color: string
 }
