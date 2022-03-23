@@ -6,7 +6,9 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common'
+import { AuthenticatedGuard } from 'src/auth/authenticated.guard'
 import { CreateTicketDto } from './dto/create-ticket.dto'
 import { UpdateTicketDto } from './dto/update-ticket.dto'
 import { TicketsService } from './tickets.service'
@@ -15,6 +17,7 @@ import { TicketsService } from './tickets.service'
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
+  @UseGuards(AuthenticatedGuard)
   @Post()
   async create(@Body() createTicketDto: CreateTicketDto) {
     return this.ticketsService.create(createTicketDto)
@@ -44,10 +47,7 @@ export class TicketsController {
   }
 
   @Patch(':id/labels/:labelId')
-  async addLabel(
-    @Param('id') id: string,
-    @Param('labelId') labelId: string,
-  ) {
+  async addLabel(@Param('id') id: string, @Param('labelId') labelId: string) {
     return this.ticketsService.addLabel(id, labelId)
   }
 

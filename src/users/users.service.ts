@@ -22,6 +22,10 @@ export class UsersService {
     return this.userModel.findById(id).exec()
   }
 
+  async findByAuthSchId(authSchId: string): Promise<UserDocument> {
+    return this.userModel.findOne({ authSchId }).exec()
+  }
+
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
