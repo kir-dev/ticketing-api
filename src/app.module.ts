@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { BoardsModule } from './boards/boards.module'
 import { LabelsModule } from './labels/labels.module'
 import { TicketsModule } from './tickets/tickets.module'
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { TicketsModule } from './tickets/tickets.module'
     BoardsModule,
     LabelsModule,
     EventEmitterModule.forRoot(),
+    UsersModule,
   ],
 })
 export class AppModule {}
